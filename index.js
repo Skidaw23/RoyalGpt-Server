@@ -4,17 +4,18 @@ const axios = require('axios');
 const { isSuspiciousOrder } = require('./utils/securityCheck');
 const { sendEmail } = require('./emails/notify');
 const productCountRoute = require('./routes/product-count');
+const dashboardRoute = require('./dashboard'); // << Nieuw
 
 const app = express();
 app.use(bodyParser.json());
 
-// Laad extra routes
+// Routes
 app.use('/', productCountRoute);
+app.use('/dashboard', dashboardRoute); // << Nieuw
 
 const PORT = process.env.PORT || 3000;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 
-// Belastingberekening per land
 function calculateTax(country, total) {
   const taxRates = {
     NL: 0.21,
@@ -26,7 +27,6 @@ function calculateTax(country, total) {
   return parseFloat(total) * rate;
 }
 
-// Webhook bij nieuwe bestelling
 app.post('/webhook', async (req, res) => {
   const data = req.body;
   const order = data.data || {};
@@ -63,7 +63,6 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
-// Testroute
 app.get('/', (req, res) => {
   res.send('RoyalGPT order processor is live');
 });
