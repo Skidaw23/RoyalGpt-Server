@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.get('/product-count', async (req, res) => {
   try {
-    const response = await axios.get(`https://${process.env.SHOPIFY_STORE_URL}/admin/api/2025-01/products/count.json`, {
+    const response = await axios.get(`https://${process.env.SHOPIFY_STORE_URL}/admin/api/2024-01/products/count.json`, {
       headers: {
         'X-Shopify-Access-Token': process.env.SHOPIFY_API_TOKEN,
         'Content-Type': 'application/json'
