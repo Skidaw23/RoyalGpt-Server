@@ -1,21 +1,24 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
+
 const { isSuspiciousOrder } = require('./utils/securityCheck');
 const { sendEmail } = require('./emails/notify');
 const productCountRoute = require('./routes/product-count');
-const dashboardRoute = require('./dashboard'); // << Nieuw
+const dashboardRoute = require('./routes/dashboard'); // <-- juiste pad!
 
 const app = express();
 app.use(bodyParser.json());
 
 // Routes
 app.use('/', productCountRoute);
-app.use('/dashboard', dashboardRoute); // << Nieuw
+app.use('/dashboard', dashboardRoute); // <-- werkt nu correct
 
+// ENV Variabelen
 const PORT = process.env.PORT || 3000;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 
+// Btw-percentage per land
 function calculateTax(country, total) {
   const taxRates = {
     NL: 0.21,
@@ -27,6 +30,7 @@ function calculateTax(country, total) {
   return parseFloat(total) * rate;
 }
 
+// Webhook voor nieuwe orders
 app.post('/webhook', async (req, res) => {
   const data = req.body;
   const order = data.data || {};
@@ -41,7 +45,9 @@ app.post('/webhook', async (req, res) => {
   const mailOptions = {
     from: ADMIN_EMAIL,
     to: ADMIN_EMAIL,
-    subject: suspicious ? 'Suspicious Order Alert' : 'New Order Created',
+    subject: suspicious
+      ? 'Suspicious Order Alert'
+      : 'New Order Created',
     text: `
       Order ID: ${order.id}
       Customer: ${order.customer?.first_name} ${order.customer?.last_name}
@@ -57,16 +63,13 @@ app.post('/webhook', async (req, res) => {
     await sendEmail(mailOptions);
     console.log('Email sent');
     res.status(200).send('Webhook processed');
-  } catch (err) {
-    console.error('Error sending email', err);
-    res.status(500).send('Error processing webhook');
+  } catch (error) {
+    console.error('Email send error:', error.message);
+    res.status(500).send('Failed to process webhook');
   }
 });
 
-app.get('/', (req, res) => {
-  res.send('RoyalGPT order processor is live');
-});
-
+// Start server
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
