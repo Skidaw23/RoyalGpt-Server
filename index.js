@@ -1,28 +1,15 @@
-
 const express = require('express');
 const bodyParser = require('body-parser');
-const axios = require('axios');
-const nodemailer = require('nodemailer');
+const { isSuspiciousOrder } = require('./utils/securityCheck');
+const { sendEmail } = require('./emails/notify');
 
 const app = express();
 app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 3000;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
-const EMAIL_PASS = process.env.EMAIL_PASS;
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: ADMIN_EMAIL,
-    pass: EMAIL_PASS
-  }
-});
-
-function isSuspicious(email, total) {
-  return email.endsWith('@tempmail.com') || parseFloat(total) > 500;
-}
-
+// Simple tax calculator
 function calculateTax(country, total) {
   const taxRates = {
     NL: 0.21,
@@ -39,7 +26,7 @@ app.post('/webhook', async (req, res) => {
   const order = data.data || {};
   const { customer_email, total_price, shipping_address } = order;
 
-  const suspicious = isSuspicious(customer_email, total_price);
+  const suspicious = isSuspiciousOrder(customer_email, total_price);
   const tax = calculateTax(shipping_address?.country_code, total_price);
   const message = suspicious
     ? 'Suspicious order flagged.'
@@ -61,7 +48,7 @@ app.post('/webhook', async (req, res) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendEmail(mailOptions);
     console.log('Email sent');
     res.status(200).send('Webhook processed');
   } catch (err) {
