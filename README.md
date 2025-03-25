@@ -1,28 +1,19 @@
-# RoyalGPT-Server (Node.js)
 
-This private Node.js-based GPT bot server is designed to automate Royal Equips tasks using Shopify and AI APIs.
+# RoyalGPT Full Automation Flow
+
+This server handles Shopify order_created webhooks, performs checks, calculates tax, and sends alerts.
 
 ## Features
-- Real-time webhook listener
-- GPT integration
-- Task automation with Shopify
-- Designed for Render deployment
+- Real-time webhook handler
+- Email notification for suspicious orders
+- Country-based tax calculation
+- Render deploy-ready
 
-## Quick Start
-
-```bash
-npm install
-npm start
-```
-
-## Deploy Free on Render
-
-1. Push this repo to GitHub
-2. Go to [Render](https://dashboard.render.com)
-3. Create a new Web Service > Connect GitHub > Select this repo
-4. Set build command: `npm install`
-5. Set start command: `npm start`
-6. Add environment variables based on `.env.example`
-
-## Author
-Royal Equips — Powered by RoyalGPT
+## Deploy Instructions
+- Push to GitHub
+- Connect to Render as Web Service
+- Add environment variables:
+  - ADMIN_EMAIL
+  - EMAIL_PASS
+- Build Command: `npm install`
+- Start Command: `npm start`
