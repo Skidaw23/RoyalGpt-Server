@@ -1,6 +1,6 @@
 const express = require('express');
 const axios = require('axios');
-const { isSuspiciousOrder } = require('../utils/securityCheck');
+const { isSuspiciousOrder } = require('../utils/securityCheck.js');
 const router = express.Router();
 
 const SHOP = process.env.SHOPIFY_STORE_URL;
