@@ -1,3 +1,10 @@
+require('dotenv').config();
+
+const shopifyApiKey = process.env.SHOPIFY_API_KEY;
+const shopifySecret = process.env.SHOPIFY_API_SECRET;
+const shopifyDomain = process.env.SHOPIFY_STORE_DOMAIN;
+const openaiApiKey = process.env.OPENAI_API_KEY;
+const notifyEmail = process.env.EMAIL_TO_NOTIFY;
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
